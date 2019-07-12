@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Intro to Shiny</title>
+    <meta charset="utf-8" />
+    <meta name="author" content=" Jenny Sloane @jfsloane" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/kunoichi.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Intro to Shiny
+## Building Our First Shiny App
+### <br>Jenny Sloane <span class="citation">@jfsloane</span>
+### <br><br>29/05/2019
+
+---
+
+
+
+name: old faithful
+# Let's start off with the classic example...
+
+--
+[Old Faithful](https://shiny.rstudio.com/gallery/faithful.html)
+
+![an image](https://ecophiles.com/wp-content/uploads/2017/09/geyser-Yellowstone-1024-x-685-759x500.jpg)
+
+
+---
+background-image: url(https://d26j9nk90wf3d1.cloudfront.net/wp-content/uploads/shiny_things_648.jpg)
+background-size: 400px
+background-position: 50% 90%
+
+# What is a Shiny App?
+--
+
+- The end result = an interactive webpage that you designed
+
+--
+
+- By interactive, I mean you can choose different variables that the user is able to manipulate directly on the webpage
+
+--
+
+- The computer is running R in the background and essentially waiting for someone to interact with the app
+
+--
+
+- Then, the computer reruns the code and updates the webpage accordingly
+
+--
+
+- *https://shiny.rstudio.com/tutorial/*
+
+---
+
+background-image: url(https://owi.usgs.gov/R/training-curriculum/course-specific-material/static/shiny1.png)
+background-size: 600px
+background-position: 50% 10%
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+--
+There are 2 components to every app
+--
+
+1. &lt;b&gt;ui&lt;/b&gt; = user interface which is the webpage that's written in HTML generated in R (although you don't need to know HTML)
+
+--
+
+2. &lt;b&gt;server&lt;/b&gt; = the set of instructions/code for the server to follow (e.g. what to do when a user changes one of the variables)
+---
+
+# Shiny App Template
+
+```r
+#library(shiny)
+
+ui &lt;- fluidPage()
+
+server &lt;- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+If you run this chunk of code, it will create a blank webpage
+
+---
+background-image: url(https://cdn-images-1.medium.com/max/2600/1*0KFB17_NGTPB0XWyc4BSgQ.jpeg)
+background-size: 600px
+background-position: 50% 80%
+## "Hello World"
+
+```r
+#library(shiny)
+
+*ui &lt;- fluidPage("Hello World")
+
+server &lt;- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+If you run this chunk of code, it will create a blank webpage with the phrase "Hello World" in the top corner
+
+---
+background-image: url(http://ei606learningtocode.weebly.com/uploads/2/4/4/5/24457493/298235.png?577)
+background-size: 350px
+background-position: 90% 90%
+## Inputs and Outputs
+
+--
+
+- It is helpful to think in terms of "inputs" and "outputs" &lt;br&gt;
+
+--
+
+- Inputs = variables that can be manipulated &lt;br&gt;
+
+--
+
+- Outputs = what the user sees on the webpage
+
+--
+
+
+```r
+ui &lt;- fluidPage(
+  # Input() functions,
+  # Output() functions
+)
+```
+
+---
+
+background-image: url(http://www.babynames.co.uk/wp-content/uploads/2016/11/Capture.jpg)
+background-size: 250px
+background-position: 100% 0%
+
+# Quick Aside...Baby Names Dataset!
+&lt;br&gt;
+[Baby Names](https://docs.google.com/document/d/1d452g_JCzUp9FVDb_vAgeOBiVtxxbn9jYENH0oPIqK0/edit)
+&lt;br&gt;&lt;br&gt;
+
+--
+
+
+```
+##        name    sex year count           state
+## 1 Charlotte Female 2017   577 New South Wales
+## 2    Olivia Female 2017   550 New South Wales
+## 3       Ava Female 2017   464 New South Wales
+## 4    Amelia Female 2017   442 New South Wales
+## 5       Mia Female 2017   418 New South Wales
+## 6      Isla Female 2017   392 New South Wales
+```
+
+--
+
+*In 2018, as part of the ROpenScience unconf, a group of data scientists compiled the ozbabynames dataset. This dataset combined name popularity data from all Australian states (except ACT), and contains data about how many babies were named every given name each year*
+
+--
+
+**Our goal: Use our R skills to create data resources and lesson plans to help teachers show kids how to work with and understand data *interactively* **
+
+---
+
+# Adding Inputs (to the baby names dateset)
+Create a Title for the Webpage
+
+```r
+ui &lt;- fluidPage(
+  titlePanel("Baby Names in Australia")
+)
+
+server &lt;- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+---
+# Adding Inputs (to the baby names dateset)
+Add a Slider, Radio Buttons, and Dropdown Option
+
+
+```r
+ui &lt;- fluidPage(
+  titlePanel("Baby Names in Australia"),
+      sliderInput(inputId = "yearInput", label = "Select a Range of Years", min = 1930, max = 2017, #slider
+            value = c(1950, 2000), sep = ""),
+      radioButtons(inputId = "stateInput", label = "Select a State", #radioButtons
+            choices = c("New South Wales", "Northern Territory", "Queensland", "South Australia", "Victoria", "Tasmania", "Western Australia"),
+            selected = "South Australia"),
+      selectInput(inputId = "namesInput", label = "Select a Name", #dropdown
+                  choices = c("Jennifer", "Jenna", "Jenny"), 
+                  selected = "Jennifer") 
+)  
+server &lt;- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+- Different input functions have different arguments &lt;br&gt;
+- ?sliderInput() 
+- ?radioButtons()
+- ?selectInput()
+
+---
+background-image: url(https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png) 
+background-size: 700px
+background-position: 50% 50%
+---
+
+# Adding Output Placeholders
+
+```r
+ui &lt;- fluidPage(
+  titlePanel("Baby Names in Australia"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("yearInput", "Year", min = 1930, max = 2017,
+            value = c(1950, 2000), sep = ""),
+      radioButtons("stateInput", "State", 
+            choices = c("New South Wales", "Northern Territory", "Queensland", "South Australia", "Victoria", "Tasmania", "Western Australia"),
+            selected = "South Australia"),
+      selectInput("namesInput", "Name", 
+                  choices = c("Jennifer", "Jenna", "Jenny"), 
+                  selected = "Jennifer")), # remember the comma here!
+    mainPanel(
+*    plotOutput("name_trends_plot"), # output placeholder (will make a plot)
+      br(), br(),
+*    tableOutput("results") # output placeholder (will make a table)
+    ) 
+  )
+)
+
+server &lt;- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+- The webpage won't look any different until you build the objects within the server
+
+---
+
+# Exploring the dataset
+
+
+--
+
+
+```r
+babynames &lt;- read.csv("ozbabynames.csv", stringsAsFactors = FALSE)
+babynames &lt;- babynames %&gt;%
+  filter(name == "Jennifer" | name == "Jenny" | name == "Jenna" &amp; state == "South Australia" &amp; year &gt;= 1950 &amp; year &lt;= 2000)
+
+ggplot(babynames, aes(year, count)) +
+  geom_smooth(se=F) +
+  facet_wrap(~name)
+```
+
+```
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+```
+
+![](shiny_workshop_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+# Server Template
+
+```r
+server &lt;- function(input, output) {
+  
+
+}  
+```
+
+--
+
+Server function assembles inputs into outputs and keeps track of "reactivity"
+- what is reactivity? excel example
+
+--
+
+&lt;h3&gt; 3 rules &lt;/h3&gt;
+
+--
+
+1) Save ouptut objects you want to display to output$
+
+--
+
+2) Build output to display with render*() 
+- renderImage, renderPlot, renderTable, etc. 
+- reactive functions
+- Builds reactive output to display in UI
+- Remember to put {} around the code you want to display 
+
+--
+
+3) Use input values with input$
+- These are the inputIDs
+- These values change when the user changes the input online
+
+---
+
+# Server - Build Plot and Table
+
+```r
+server &lt;- function(input, output) {
+  
+  data &lt;- reactive({ # build a reactive object. later call as a function.
+    if (is.null(input$namesInput)) {
+      return(NULL)
+    } 
+    babynames %&gt;%
+      filter(year &gt;= input$yearInput[1],
+             year &lt;= input$yearInput[2],
+             state == input$stateInput,
+             name == input$namesInput
+      ) %&gt;%
+      group_by(name, year) %&gt;% 
+      summarise(count = sum(count)) 
+  })
+  
+  output$name_trends_plot &lt;- renderPlot({
+    if (is.null(data())) {
+      return()
+    }
+    ggplot(data(), aes(year, count, colour=name)) +
+      geom_point(na.rm=TRUE, size=5) +
+      geom_line(na.rm=TRUE, size=2) +
+      theme_bw() #+ 
+    })
+  
+  output$results &lt;- renderTable({
+    data() 
+  })
+}
+```
+
+---
+
+# Full App Code
+
+- Last line should always be shinyApp()
+
+
+```r
+ui &lt;- fluidPage(
+  titlePanel("Baby Names in Australia"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("yearInput", "Year", min = 1930, max = 2017,
+            value = c(1950, 2000), sep = ""),
+      radioButtons("stateInput", "State", #radioButtons
+            choices = c("New South Wales", "Northern Territory", "Queensland", "South Australia", "Victoria", "Tasmania", "Western Australia"),
+            selected = "South Australia"),
+      selectInput("namesInput", "Name", #checkboxGroupInput
+                  choices = c("Jennifer", "Jenna", "Jenny"), 
+                  selected = "Jennifer") 
+    #  uiOutput("namesOutput") # use this to get a list of all of the names
+    ),
+    mainPanel(
+      plotOutput("name_trends_plot"), # output placeholder (will make a histogram) and must use renderPlot in the server function
+      br(), br(),
+      tableOutput("results") # output placeholder (will make a table) and must use renderTable in the server function 
+    ) 
+  )
+)
+
+
+server &lt;- function(input, output) {
+
+  data &lt;- reactive({
+    if (is.null(input$namesInput)) {
+      return(NULL)
+    } 
+    
+    babynames %&gt;%
+      filter(year &gt;= input$yearInput[1],
+             year &lt;= input$yearInput[2],
+             state == input$stateInput,
+             name == input$namesInput
+      ) %&gt;%
+      group_by(name, year) %&gt;% 
+      summarise(count = sum(count)) 
+  })
+  
+  output$name_trends_plot &lt;- renderPlot({
+    if (is.null(data())) {
+      return()
+    }
+    ggplot(data(), aes(year, count, colour=name)) +
+      geom_point(na.rm=TRUE, size=5) +
+      geom_line(na.rm=TRUE, size=2) +
+      theme_bw() 
+    })
+  
+  output$results &lt;- renderTable({
+    data() 
+  })
+}
+
+# to deploy to shinyapps.io
+# rsconnect::deployApp(here())
+
+shinyApp(ui = ui, server = server)
+```
+
+<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
+
+---
+# Final Product!
+
+
+```r
+shinyApp(ui = ui, server = server)
+```
+
+<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
+
+
+
+---
+
+# How to Save Your App
+
+- Always name your app &lt;font color="red"&gt;"app.R"&lt;/font&gt; - Shiny server will look for this to build the app
+
+--
+
+- Include all the other necessary files (datasets, images, css...) in the same folder
+
+--
+
+- Another option: save app in 2 files - &lt;font color="red"&gt;"ui.R"&lt;/font&gt; and &lt;font color="red"&gt;"server.R"&lt;/font&gt; (don't need to call shinyApp() at the end)
+
+--
+
+- Once your files are saved this way, R will recognize you are using a shiny app and a &lt;font color="red"&gt;Run App&lt;/font&gt; button will appear above the script (can choose to launch app in the viewer pane!)
+
+---
+
+# shinayapps.io
+
+[shinyapps.io](https://www.shinyapps.io)
+
+--
+
+- A server that is free (to an extent), secure, and easy to use
+
+--
+
+- Can also build your own server
+
+---
+
+# What's Next?
+
+- *https://shiny.rstudio.com/tutorial/* also goes through customizing reactions and appearance
+- isolate() = non-reactive value
+
+--
+
+- For now, let's continue building our Baby Names App!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,451 @@
+---
+title: "Intro to Shiny"
+subtitle: "Building Our First Shiny App"
+author: "<br>Jenny Sloane @jfsloane"
+date: "<br><br>29/05/2019"
+output:
+  xaringan::moon_reader:
+    css: [default, kunoichi, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+name: old faithful
+# Let's start off with the classic example...
+
+--
+[Old Faithful](https://shiny.rstudio.com/gallery/faithful.html)
+
+![an image](https://ecophiles.com/wp-content/uploads/2017/09/geyser-Yellowstone-1024-x-685-759x500.jpg)
+
+
+---
+background-image: url(https://d26j9nk90wf3d1.cloudfront.net/wp-content/uploads/shiny_things_648.jpg)
+background-size: 400px
+background-position: 50% 90%
+
+# What is a Shiny App?
+--
+
+- The end result = an interactive webpage that you designed
+
+--
+
+- By interactive, I mean you can choose different variables that the user is able to manipulate directly on the webpage
+
+--
+
+- The computer is running R in the background and essentially waiting for someone to interact with the app
+
+--
+
+- Then, the computer reruns the code and updates the webpage accordingly
+
+--
+
+- *https://shiny.rstudio.com/tutorial/*
+
+---
+
+background-image: url(https://owi.usgs.gov/R/training-curriculum/course-specific-material/static/shiny1.png)
+background-size: 600px
+background-position: 50% 10%
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+--
+There are 2 components to every app
+--
+
+1. <b>ui</b> = user interface which is the webpage that's written in HTML generated in R (although you don't need to know HTML)
+
+--
+
+2. <b>server</b> = the set of instructions/code for the server to follow (e.g. what to do when a user changes one of the variables)
+---
+
+# Shiny App Template
+```{r, eval = FALSE}
+library(shiny)
+
+ui <- fluidPage()
+
+server <- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+If you run this chunk of code, it will create a blank webpage
+
+---
+background-image: url(https://cdn-images-1.medium.com/max/2600/1*0KFB17_NGTPB0XWyc4BSgQ.jpeg)
+background-size: 600px
+background-position: 50% 80%
+## "Hello World"
+```{r, eval = FALSE}
+#library(shiny)
+
+*ui <- fluidPage("Hello World")
+
+server <- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+If you run this chunk of code, it will create a blank webpage with the phrase "Hello World" in the top corner
+
+---
+background-image: url(http://ei606learningtocode.weebly.com/uploads/2/4/4/5/24457493/298235.png?577)
+background-size: 350px
+background-position: 90% 90%
+## Inputs and Outputs
+
+--
+
+- It is helpful to think in terms of "inputs" and "outputs" <br>
+
+--
+
+- Inputs = variables that can be manipulated <br>
+
+--
+
+- Outputs = what the user sees on the webpage
+
+--
+
+```{r, eval=FALSE}
+ui <- fluidPage(
+  # Input() functions,
+  # Output() functions
+)
+```
+
+---
+
+background-image: url(http://www.babynames.co.uk/wp-content/uploads/2016/11/Capture.jpg)
+background-size: 250px
+background-position: 100% 0%
+
+# Quick Aside...Baby Names Dataset!
+<br>
+[Baby Names](https://docs.google.com/document/d/1d452g_JCzUp9FVDb_vAgeOBiVtxxbn9jYENH0oPIqK0/edit)
+<br><br>
+
+--
+
+```{r, echo=FALSE}
+babynames <- read.csv("ozbabynames.csv")
+head(babynames)
+```
+
+--
+
+*In 2018, as part of the ROpenScience unconf, a group of data scientists compiled the ozbabynames dataset. This dataset combined name popularity data from all Australian states (except ACT), and contains data about how many babies were named every given name each year*
+
+--
+
+**Our goal: Use our R skills to create data resources and lesson plans to help teachers show kids how to work with and understand data *interactively* **
+
+---
+
+# Adding Inputs (to the baby names dateset)
+Create a Title for the Webpage
+```{r, eval = FALSE}
+ui <- fluidPage(
+  titlePanel("Baby Names in Australia")
+)
+
+server <- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+---
+# Adding Inputs (to the baby names dateset)
+Add a Slider, Radio Buttons, and Dropdown Option
+
+```{r, eval = FALSE}
+ui <- fluidPage(
+  titlePanel("Baby Names in Australia"),
+      sliderInput(inputId = "yearInput", label = "Select a Range of Years", min = 1930, max = 2017, #slider
+            value = c(1950, 2000), sep = ""),
+      radioButtons(inputId = "stateInput", label = "Select a State", #radioButtons
+            choices = c("New South Wales", "Northern Territory", "Queensland", "South Australia", "Victoria", "Tasmania", "Western Australia"),
+            selected = "South Australia"),
+      selectInput(inputId = "namesInput", label = "Select a Name", #dropdown
+                  choices = c("Jennifer", "Jenna", "Jenny"), 
+                  selected = "Jennifer") 
+)  
+server <- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+- Different input functions have different arguments <br>
+- ?sliderInput() 
+- ?radioButtons()
+- ?selectInput()
+
+---
+background-image: url(https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png) 
+background-size: 700px
+background-position: 50% 50%
+---
+
+# Adding Output Placeholders
+```{r, eval = FALSE}
+ui <- fluidPage(
+  titlePanel("Baby Names in Australia"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("yearInput", "Year", min = 1930, max = 2017,
+            value = c(1950, 2000), sep = ""),
+      radioButtons("stateInput", "State", 
+            choices = c("New South Wales", "Northern Territory", "Queensland", "South Australia", "Victoria", "Tasmania", "Western Australia"),
+            selected = "South Australia"),
+      selectInput("namesInput", "Name", 
+                  choices = c("Jennifer", "Jenna", "Jenny"), 
+                  selected = "Jennifer")), # remember the comma here!
+    mainPanel(
+    {{plotOutput("name_trends_plot"),}} # output placeholder (will make a plot)
+      br(), br(),
+    {{tableOutput("results")}} # output placeholder (will make a table)
+    ) 
+  )
+)
+
+server <- function(input, output) {}
+
+shinyApp(ui = ui, server = server)
+```
+
+--
+
+- The webpage won't look any different until you build the objects within the server
+
+---
+
+# Exploring the dataset
+```{r include=FALSE}
+library(shiny)
+library(ggplot2)
+library(dplyr)
+library(here)
+```
+
+--
+
+```{r warning = FALSE}
+babynames <- read.csv("ozbabynames.csv", stringsAsFactors = FALSE)
+babynames <- babynames %>%
+  filter(name == "Jennifer" | name == "Jenny" | name == "Jenna" & state == "South Australia" & year >= 1950 & year <= 2000)
+
+ggplot(babynames, aes(year, count)) +
+  geom_smooth(se=F) +
+  facet_wrap(~name)
+
+```
+
+---
+
+# Server Template
+```{r}
+server <- function(input, output) {
+  
+
+}  
+```
+
+--
+
+Server function assembles inputs into outputs and keeps track of "reactivity"
+- what is reactivity? excel example
+
+--
+
+<h3> 3 rules </h3>
+
+--
+
+1) Save ouptut objects you want to display to output$
+
+--
+
+2) Build output to display with render*() 
+- renderImage, renderPlot, renderTable, etc. 
+- reactive functions
+- Builds reactive output to display in UI
+- Remember to put {} around the code you want to display 
+
+--
+
+3) Use input values with input$
+- These are the inputIDs
+- These values change when the user changes the input online
+
+---
+
+# Server - Build Plot and Table
+```{r, eval = FALSE}
+server <- function(input, output) {
+  
+  data <- reactive({ # build a reactive object. later call as a function.
+    if (is.null(input$namesInput)) {
+      return(NULL)
+    } 
+    babynames %>%
+      filter(year >= input$yearInput[1],
+             year <= input$yearInput[2],
+             state == input$stateInput,
+             name == input$namesInput
+      ) %>%
+      group_by(name, year) %>% 
+      summarise(count = sum(count)) 
+  })
+  
+  output$name_trends_plot <- renderPlot({
+    if (is.null(data())) {
+      return()
+    }
+    ggplot(data(), aes(year, count, colour=name)) +
+      geom_point(na.rm=TRUE, size=5) +
+      geom_line(na.rm=TRUE, size=2) +
+      theme_bw() #+ 
+    })
+  
+  output$results <- renderTable({
+    data() 
+  })
+}
+
+```
+
+---
+
+# Full App Code
+
+- Last line should always be shinyApp()
+
+```{r}
+ui <- fluidPage(
+  titlePanel("Baby Names in Australia"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("yearInput", "Year", min = 1930, max = 2017,
+            value = c(1950, 2000), sep = ""),
+      radioButtons("stateInput", "State", #radioButtons
+            choices = c("New South Wales", "Northern Territory", "Queensland", "South Australia", "Victoria", "Tasmania", "Western Australia"),
+            selected = "South Australia"),
+      selectInput("namesInput", "Name", #checkboxGroupInput
+                  choices = c("Jennifer", "Jenna", "Jenny"), 
+                  selected = "Jennifer") 
+    #  uiOutput("namesOutput") # use this to get a list of all of the names
+    ),
+    mainPanel(
+      plotOutput("name_trends_plot"), # output placeholder (will make a histogram) and must use renderPlot in the server function
+      br(), br(),
+      tableOutput("results") # output placeholder (will make a table) and must use renderTable in the server function 
+    ) 
+  )
+)
+
+
+server <- function(input, output) {
+
+  data <- reactive({
+    if (is.null(input$namesInput)) {
+      return(NULL)
+    } 
+    
+    babynames %>%
+      filter(year >= input$yearInput[1],
+             year <= input$yearInput[2],
+             state == input$stateInput,
+             name == input$namesInput
+      ) %>%
+      group_by(name, year) %>% 
+      summarise(count = sum(count)) 
+  })
+  
+  output$name_trends_plot <- renderPlot({
+    if (is.null(data())) {
+      return()
+    }
+    ggplot(data(), aes(year, count, colour=name)) +
+      geom_point(na.rm=TRUE, size=5) +
+      geom_line(na.rm=TRUE, size=2) +
+      theme_bw() 
+    })
+  
+  output$results <- renderTable({
+    data() 
+  })
+}
+
+# to deploy to shinyapps.io
+# rsconnect::deployApp(here())
+
+shinyApp(ui = ui, server = server)
+```
+
+---
+# Final Product!
+
+```{r}
+shinyApp(ui = ui, server = server)
+```
+
+
+
+---
+
+# How to Save Your App
+
+- Always name your app <font color="red">"app.R"</font> - Shiny server will look for this to build the app
+
+--
+
+- Include all the other necessary files (datasets, images, css...) in the same folder
+
+--
+
+- Another option: save app in 2 files - <font color="red">"ui.R"</font> and <font color="red">"server.R"</font> (don't need to call shinyApp() at the end)
+
+--
+
+- Once your files are saved this way, R will recognize you are using a shiny app and a <font color="red">Run App</font> button will appear above the script (can choose to launch app in the viewer pane!)
+
+---
+
+# shinayapps.io
+
+[shinyapps.io](https://www.shinyapps.io)
+
+--
+
+- A server that is free (to an extent), secure, and easy to use
+
+--
+
+- Can also build your own server
+
+---
+
+# What's Next?
+
+- *https://shiny.rstudio.com/tutorial/* also goes through customizing reactions and appearance
+- isolate() = non-reactive value
+
+--
+
+- For now, let's continue building our Baby Names App!
